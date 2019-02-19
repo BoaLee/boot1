@@ -1,0 +1,62 @@
+server:
+  port: 8086
+  jsp-servlet:
+    init-parameters:
+      development: true
+
+spring:
+  datasource:
+    name: test
+    url: jdbc:mysql://127.0.0.1:3306/witkey?useUnicode=true&characterEncoding=utf8
+    username: root
+    password: admin123
+    type: com.alibaba.druid.pool.DruidDataSource
+    filters: stat
+    maxActive: 20
+    initialSize: 1
+    maxWait: 60000
+    minIdle: 1
+    timeBetweenEvictionRunsMillis: 60000
+    minEvictableIdleTimeMillis: 300000
+    validationQuery: select 'x'
+    testWhileIdle: true
+    testOnBorrow: false
+    testOnReturn: false
+    poolPreparedStatements: true
+    maxOpenPreparedStatements: 20
+    http:
+      mulitipart:
+        max-file-size: 10MB
+        max-request-size: 50MB
+  mvc:
+    view:
+      prefix: /jsps/
+      suffix: .jsp
+
+  jackson:
+    date-format: yyyy-MM-dd HH:mm:ss
+
+  #热部署
+  devtools:
+    restart:
+      enabled: true
+      additional-paths: src/main/java
+      exclude: test/**
+mybatis:
+  mapper-locations: classpath:mapping/*.xml
+  type-aliases-package: com.bgs.witkey.boot.pojo
+  configuration:
+    map-underscore-to-camel-case: true
+
+pagehelper:
+  helperDialect: mysql
+  reasonable: true
+  supportMethodsArguments: true
+  pageSizeZero: true
+  params: count=countSql
+
+
+#打印mybatis日志信息
+logging:
+  level:
+    com.bgs.witkey.boot.mapper: debug

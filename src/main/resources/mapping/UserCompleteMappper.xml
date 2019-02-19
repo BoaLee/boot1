@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.bgs.witkey.boot.mapper.UserCompleteMapper">
+
+    <resultMap id="rm" type="com.bgs.witkey.boot.pojo.UserComplete">
+        <id column="id" property="id" jdbcType="INTEGER"/>
+        <result column="corporate_name" property="corporateName" jdbcType="VARCHAR"/>
+        <result column="province_name" property="provinceName" jdbcType="VARCHAR"/>
+        <result column="province_code" property="provinceCode" jdbcType="VARCHAR"/>
+        <result column="city_name" property="cityName" jdbcType="VARCHAR"/>
+        <result column="city_code" property="cityCode" jdbcType="VARCHAR"/>
+        <result column="area_name" property="areaName" jdbcType="VARCHAR"/>
+        <result column="area_code" property="areaCode" jdbcType="VARCHAR"/>
+        <result column="corporate_address" property="corporateAddress" jdbcType="VARCHAR"/>
+        <result column="scope_operation" property="scopeOperation" jdbcType="VARCHAR"/>
+        <result column="business_license" property="businessLicense" jdbcType="VARCHAR"/>
+        <result column="logo" property="logo" jdbcType="VARCHAR"/>
+        <result column="audit_status" property="auditStatus" jdbcType="INTEGER"/>
+        <result column="vip_level" property="vipLevel" jdbcType="INTEGER"/>
+        <result column="creat_name" property="creatName" jdbcType="VARCHAR"/>
+        <result column="creat_date" property="creatDate" jdbcType="TIMESTAMP"/>
+        <result column="update_name" property="updateName" jdbcType="VARCHAR"/>
+        <result column="update_date" property="updateDate" jdbcType="TIMESTAMP"/>
+        <result column="remarks" property="remarks" jdbcType="VARCHAR"/>
+    </resultMap>
+
+    <!--根据id查UserComplete-->
+    <select id="selUserCompleteInfoById" parameterType="int" resultMap="rm">
+        select * from witkey_user_complete where id = #{0}
+    </select>
+
+    <update id="uplUserCompleteInfo" parameterType="com.bgs.witkey.boot.pojo.UserComplete">
+        update witkey_user_complete
+        set
+            corporate_name=#{corporateName},
+            province_name=#{provinceName},
+            province_code=#{provinceCode},
+            city_name=#{cityName},
+            city_code=#{cityCode},
+            area_name=#{areaName},
+            area_code=#{areaCode},
+            corporate_address=#{corporateAddress},
+            scope_operation=#{scopeOperation},
+            business_license=#{businessLicense},
+            logo=#{logo},
+            update_name=#{updateName},
+            update_date=now()
+        where id = #{id}
+
+    </update>
+
+    <insert id="insUserCompleteInfo" parameterType="com.bgs.witkey.boot.pojo.UserComplete">
+        insert into witkey_user_complete values
+        (
+            #{id},
+            #{corporateName},
+            #{provinceName},
+            #{provinceCode},
+            #{cityName},
+            #{cityCode},
+            #{areaName},
+            #{areaCode},
+            #{corporateAddress},
+            #{scopeOperation},
+            #{businessLicense},
+            #{logo},
+            0,null,
+            #{creatName},
+            now(),null,null,null
+        )
+
+    </insert>
+
+    <update id="updUserCompleteLicenseInfo" parameterType="com.bgs.witkey.boot.pojo.UserComplete">
+        update witkey_user_complete
+        set
+            business_license=#{businessLicense},
+            update_name=#{updateName},
+            update_date=now()
+        where id = #{id}
+
+    </update>
+
+    <update id="updUserCompleteLogoInfo" parameterType="com.bgs.witkey.boot.pojo.UserComplete">
+        update witkey_user_complete
+        set
+            logo=#{logo},
+            update_name=#{updateName},
+            update_date=now()
+        where
+            id = #{id}
+    </update>
+
+</mapper>

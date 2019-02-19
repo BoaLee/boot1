@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.bgs.witkey.boot.mapper.ChinaLocalMapper">
+
+    <resultMap id="rp" type="com.bgs.witkey.boot.pojo.ChinaLocal">
+        <id column="sid" property="id" jdbcType="INTEGER"/>
+        <result column="provinceID" property="code" jdbcType="VARCHAR"/>
+        <result column="province" property="name" jdbcType="VARCHAR"/>
+    </resultMap>
+
+    <resultMap id="rc" type="com.bgs.witkey.boot.pojo.ChinaLocal">
+        <id column="cid" property="id" jdbcType="INTEGER"/>
+        <result column="cityID" property="code" jdbcType="VARCHAR"/>
+        <result column="city" property="name" jdbcType="VARCHAR"/>
+        <result column="father" property="pid" jdbcType="VARCHAR"/>
+    </resultMap>
+
+    <resultMap id="ra" type="com.bgs.witkey.boot.pojo.ChinaLocal">
+        <id column="rid" property="id" jdbcType="INTEGER"/>
+        <result column="areaID" property="code" jdbcType="VARCHAR"/>
+        <result column="area" property="name" jdbcType="VARCHAR"/>
+        <result column="father" property="pid" jdbcType="VARCHAR"/>
+    </resultMap>
+
+    <!-- 查询所有省 -->
+    <select id="selAllProvinceInfo" resultMap="rp">
+
+        select * from hat_province
+
+    </select>
+
+    <!-- 根据id查询对应的市信息 -->
+    <select id="selCityByPid" parameterType="string" resultMap="rc">
+
+        select * from hat_city where father = #{pid}
+
+    </select>
+
+    <!-- 根据pid查对应的县信息 -->
+    <select id="selAreaByPid" parameterType="string" resultMap="ra">
+
+        select * from hat_area where father = #{pid}
+
+    </select>
+
+    <resultMap id="rapp" type="com.bgs.witkey.boot.pojo.ChinaLocal">
+
+        <id property="id" column="id" jdbcType="VARCHAR"/>
+        <result property="name" column="project_cycle" jdbcType="VARCHAR"/>
+
+    </resultMap>
+    <!-- 查询所有项目周期信息 -->
+    <select id="selAllProjectPeriodInfo" resultMap="rapp">
+
+        select id,project_cycle from witkey_project_period
+
+    </select>
+
+    <resultMap id="rapb" type="com.bgs.witkey.boot.pojo.ChinaLocal">
+
+        <id property="id" column="id"/>
+        <result property="name" column="project_budget"/>
+
+    </resultMap>
+    <!-- 查询所有项目的预算信息 -->
+    <select id="selAllProjectBudgetInfo" resultMap="rapb">
+
+        select id,project_budget from witkey_project_budget
+
+    </select>
+
+    <resultMap id="ramt" type="com.bgs.witkey.boot.pojo.ChinaLocal">
+
+        <id column="id" property="id"/>
+        <result column="type_code" property="code"/>
+        <result column="type_name" property="name"/>
+        <result column="fatherid" property="pid"/>
+
+    </resultMap>
+    <!-- 查询一级任务类型信息 -->
+    <select id="selAllMissionTypeInfo" resultMap="ramt">
+
+        select id,type_code,type_name,fatherid from witkey_mission_type where fatherid = 0
+
+    </select>
+
+    <!-- 查询二级任务类型累心 -->
+    <select id="findProjectTypeByPtype" resultMap="ramt">
+
+        select id,type_code,type_name,fatherid from witkey_mission_type where fatherid = #{pid}
+
+    </select>
+
+    <select id="selProjectSecondeTypeByTypeCode" parameterType="String" resultMap="ramt">
+        select id,type_code,type_name,fatherid
+        from witkey_mission_type
+        where type_code = #{param1}
+    </select>
+
+</mapper>

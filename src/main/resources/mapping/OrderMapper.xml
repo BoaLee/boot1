@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.bgs.witkey.boot.mapper.OrderMapper">
+
+    <insert id="addOrders" parameterType="witkeyOrder">
+        insert into witkey_order values
+            (#{oid},#{title},#{money},0,#{did},#{uid},now(),#{fid})
+    </insert>
+
+    <select id="findAllOrders" parameterType="int" resultType="witkeyOrderVo">
+        select o.*,userc.corporate_name
+        from witkey_order o,witkey_user_complete userc
+        where o.fid = userc.id and o.fid = #{id}
+    </select>
+
+    <select id="findOrders" parameterType="int" resultType="witkeyOrderVo">
+        select o.*,userc.corporate_name
+        from witkey_order o,witkey_user_complete userc
+        where o.fid = userc.id and o.fid = #{id} and o.stutas = #{stu}
+    </select>
+
+    <update id="updateWitkeyOrderByOid" parameterType="String">
+        update witkey_order set stutas = 1 where oid = #{oid}
+    </update>
+
+
+</mapper>

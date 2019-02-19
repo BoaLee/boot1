@@ -1,0 +1,297 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.bgs.witkey.boot.mapper.DemandMapper">
+    
+    <sql id="demandColumn">
+        create_id,create_company_name,project_title,project_abstract,
+        project_period_id,project_period, project_budget_id,project_budget,
+        project_type,project_seconde_type,publish_date,
+        abort_date,province_name,province_code,city_name,city_code,
+        area_name,area_code,demand_state,create_name,create_date
+    </sql>
+    
+    <insert id="insDemandInfo" parameterType="com.bgs.witkey.boot.pojo.Demand">
+        insert into witkey_demand
+          (
+            <include refid="demandColumn"/>
+          )  values
+          (
+              #{createId},#{createCompanyName},#{projectTitle},
+              #{projectAbstract},#{projectPeriodId},#{projectPeriod},
+              #{projectBudgetId},#{projectBudget},#{projectType},
+              #{projectSecondeType},now(),#{abortDate},
+              #{provinceName},#{provinceCode},#{cityName},
+              #{cityCode},#{areaName},#{areaCode},
+              #{demandState},#{createName},now()
+          )
+    </insert>
+
+    <select id="findAllCurrentDemand" parameterType="int" resultType="demand">
+        select id,<include refid="demandColumn"/>
+        from witkey_demand
+        where create_id = #{id}
+    </select>
+
+    <select id="findCurrentDemandByDemandStatus" resultType="demand">
+        select id,<include refid="demandColumn"/>
+        from witkey_demand
+        where create_id = #{id}
+        and demand_state BETWEEN #{begin} and #{end}
+    </select>
+
+    <select id="findCurrentDemandByDemandStatuscaogao" resultType="demand">
+        select * from witkey_demand
+        where create_id = #{id} and demand_state = #{status}
+    </select>
+
+    <select id="selCurrentDemandById" resultType="demand" parameterType="int">
+        select id,<include refid="demandColumn"/>
+        from witkey_demand
+        where id = #{did}
+    </select>
+
+    <update id="updateDemand" parameterType="demand">
+        update witkey_demand
+        set
+            project_title = #{projectTitle} ,
+            project_abstract = #{projectAbstract} ,
+            project_period_id = #{projectPeriodId},
+            project_period = #{projectPeriod},
+            project_budget_id = #{projectBudgetId},
+            project_budget = #{projectBudget},
+            project_type = #{projectType},
+            project_seconde_type = #{projectSecondeType},
+            abort_date = #{abortDate},
+            province_name = #{provinceName},
+            province_code = #{provinceCode},
+            city_name = #{cityName},
+            city_code = #{cityCode},
+            area_name = #{areaName},
+            area_code = #{areaCode},
+            demand_state = #{demandState},
+            update_name = #{updateName},
+            update_date = now()
+        where id = #{id}
+    </update>
+
+    <resultMap type="com.bgs.witkey.boot.pojo.DemandHallVo" id="apply">
+        <id column="id" property="id"/>
+        <result column="project_title" property="projectTitle"/>
+        <result column="project_budget" property="projectBudget"/>
+        <result column="publish_date" property="publishDate"/>
+        <result column="abort_date" property="abortDate"/>
+        <result column="province_name" property="provinceName"/>
+        <result column="city_name" property="cityName"/>
+        <result column="area_name" property="areaName"/>
+        <result column="scope_operation" property="scopeOperation"/>
+        <result column="typeName1" property="typeName1"/>
+        <result column="typeName2" property="typeName2"/>
+        <result column="applyNum" property="applyNum"/>
+    </resultMap>
+
+    <select id="listAllaplyingDemand" resultMap="apply">
+        select
+            dttu.*,ifnull(app.applyNum,0) as applyNum
+        from(
+                select
+                    demand.id,
+                    demand.project_title,
+                    demand.province_name,
+                    demand.city_name,
+                    demand.area_name,
+                    demand.publish_date,
+                    demand.project_budget,
+                    demand.abort_date,
+                    type1.type_name as typeName1,
+                    type2.type_name as typeName2,
+                    userc.scope_operation
+                from
+                    witkey_demand demand
+                join
+                    witkey_mission_type type1
+                on
+                    demand.project_type = type1.type_code
+                join
+                    witkey_mission_type type2
+                on
+                    demand.project_seconde_type = type2.type_code
+                join
+                    witkey_user_complete userc
+                on
+                    demand.create_id = userc.id
+                where
+                    demand.demand_state = 2
+            ) dttu
+                left join (
+                select
+                    count(1) as applyNum ,demand_id
+                from
+                    witkey_demand_apply
+                group by demand_id
+            ) app
+            on dttu.id = app.demand_id
+    </select>
+
+    <resultMap type="com.bgs.witkey.boot.pojo.DemandHallVo" id="demandById">
+        <id column="id" property="id"/>
+        <result column="create_id" property="createId"/>
+        <result column="create_company_name" property="createCompanyName"/>
+        <result column="project_title" property="projectTitle"/>
+        <result column="project_abstract" property="projectAbstract"/>
+        <result column="project_period_id" property="projectPeriodId"/>
+        <result column="project_period" property="projectPeriod"/>
+        <result column="project_budget_id" property="projectBudgetId"/>
+        <result column="project_budget" property="projectBudget"/>
+        <result column="project_type" property="projectType"/>
+        <result column="project_seconde_type" property="projectSecondeType"/>
+        <result column="publish_date" property="publishDate"/>
+        <result column="abort_date" property="abortDate"/>
+        <result column="province_name" property="provinceName"/>
+        <result column="province_code" property="provinceCode"/>
+        <result column="city_name" property="cityName"/>
+        <result column="city_code" property="cityCode"/>
+        <result column="area_name" property="areaName"/>
+        <result column="area_code" property="areaCode"/>
+        <result column="demand_state" property="demandState"/>
+        <result column="create_name" property="createName"/>
+        <result column="create_date" property="createDate"/>
+        <result column="demandStateName" property="demandStateName"/>
+        <result column="projectTypeName" property="projectTypeName"/>
+        <result column="projectSecondeTypeName" property="projectSecondeTypeName"/>
+    </resultMap>
+
+    <select id="selDemandMissionWorld" parameterType="int" resultMap="demandById">
+        select
+            d.id,d.create_id,d.create_company_name,d.project_title,d.project_abstract,
+            d.project_period_id,d.project_period, d.project_budget_id,d.project_budget,
+            d.project_type,d.project_seconde_type,d.publish_date,
+            d.abort_date,d.province_name,d.province_code,d.city_name,d.city_code,
+            d.area_name,d.area_code,d.demand_state,d.create_name,d.create_date,
+            type1.type_name as projectTypeName,
+            type2.type_name as projectSecondeTypeName,
+            dwt.typename as demandStateName
+        from
+             witkey_demand d,
+             witkey_mission_type type1,
+             witkey_mission_type type2,
+             dd_word_table dwt
+        where d.project_type = type1.type_code
+        and   d.project_seconde_type = type2.type_code
+        and   d.demand_state = dwt.typecode
+        and   dwt.typecode = 2
+        and   d.id = #{dmandId}
+    </select>
+
+    <select id="showDemandApplyNum" parameterType="int" resultType="int">
+        select count(1) from witkey_demand_apply where demand_id = #{demandId}
+    </select>
+
+    <select id="toDemandApplyMail" parameterType="int" resultType="com.bgs.witkey.boot.pojo.DemandHallVo">
+        select
+        d.id,
+        d.project_title as projectTitle,
+        d.publish_date as publishDate,
+        d.project_period as projectPeriod,
+        d.abort_date as abortDate,
+        d.province_name as provinceName,
+        d.city_name as cityName,
+        d.area_name as areaName,
+        userc.scope_operation as scopeOperation
+        from witkey_demand d
+        join witkey_user_complete userc
+        on d.create_id = userc.id
+        where d.id = #{id}
+
+    </select>
+
+    <insert id="insDemandApplyInfo" parameterType="demandApply">
+        insert into witkey_demand_apply values
+            (#{demandId},#{userId},#{applyContent},
+             0,#{demandMoney},#{demandPeriod})
+    </insert>
+
+    <select id="selApplyAndCompleteInfoByDemandId" parameterType="int" resultType="userCompleteDemandApplyVo">
+        select
+        apply.*,
+        userc.id,userc.province_name,userc.city_name,userc.area_name,userc.scope_operation,userc.logo
+        from witkey_demand_apply apply
+        join witkey_user_complete userc
+        on apply.user_id = userc.id
+        where apply.demand_id = #{demandId}
+    </select>
+
+    <update id="doHireUserComplete" parameterType="int">
+        update witkey_demand_apply
+        set apply_status = 1
+        where demand_id = #{demandId} and user_id = #{userId}
+    </update>
+
+    <select id="findAllAppliedDemand" resultType="demandApplyVo" parameterType="int">
+        select
+        demand.id,demand.create_id,demand.create_company_name,demand.project_title
+        ,apply.*
+        from witkey_demand demand
+        join witkey_demand_apply apply
+        on demand.id = apply.demand_id
+        where apply.user_id = #{id}
+    </select>
+
+    <select id="findAllApliedDemand" resultType="demandApplyVo" parameterType="int">
+
+        select demand.id,demand.create_id,demand.create_company_name,demand.project_title,apply.*
+        from witkey_demand demand
+        join witkey_demand_apply apply
+        on demand.id = apply.demand_id
+        where apply.user_id = #{id}
+
+    </select>
+
+    <select id="findAppliedDemand" resultType="demandApplyVo" parameterType="int">
+
+        select
+        from witkey_demand demand,witkey_demand_apply apply
+        where demand.id = apply.demand_id
+        and apply.user_id = #{id}
+        and apply.apply_status = #{sta}
+
+    </select>
+
+    <select id="findDemandSchemeInfoByDemandIdAndUserId" parameterType="int">
+
+        select schemes
+        from witkey_demand_scheme
+        where user_id = #{id} and demand_id = #{demandId}
+
+    </select>
+
+    <select id="findDemandHallVoByDemandId" parameterType="int" resultType="demandHallVo">
+        select
+            demand.*,type1.type_name typeName1,type2.type_name typeName2
+        from witkey_demand demand , witkey_mission_type type1, witkey_mission_type type2
+        where demand.project_type = type1.type_code and
+            demand.project_seconde_type = type2.type_code and
+            demand.id = #{demandId}
+    </select>
+
+    <select id="DemandApplyVo" parameterType="int" resultType="demandApplyVo">
+
+      select
+      a.*,d.id,d.create_id,d.create_company_name,d.project_title
+      from witkey_demand d,witkey_demand_apply a
+      where d.id = a.demand_id
+      and d.id = #{demandId}
+      and a.user_id = #{userId}
+
+    </select>
+
+    <select id="selDemandApplyByDidAndUid" parameterType="int" resultType="demandApplyVo">
+        select
+            a.*,d.id,d.create_id,d.create_company_name,d.project_title
+        from witkey_demand d , witkey_demand_apply a
+        where d.id = a.demand_id
+          and d.id = #{demandId}
+          and a.user_id = #{userId}
+    </select>
+
+
+</mapper>
